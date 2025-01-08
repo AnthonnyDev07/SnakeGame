@@ -1,0 +1,44 @@
+/* style.css */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1f1f1f;
+}
+
+.container {
+    position: relative;
+    text-align: center;
+}
+
+.score-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.apples-eaten-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+#score, #applesEaten {
+    font-family: 'VT323', monospace;
+    font-size: 26px;
+    color: #1f1f1f;
+}
+
+#gameCanvas {
+    border: 1px solid white;
+    width: 600px; /* Cambia el ancho deseado */
+    height: 600px; /* Cambia el alto deseado */
+}
