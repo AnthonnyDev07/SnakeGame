@@ -12,33 +12,54 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #1f1f1f;
+    font-family: 'VT323', monospace;
+    color: white;
+    overflow: hidden; /* Evita el desplazamiento no deseado */
 }
 
 .container {
     position: relative;
     text-align: center;
+    width: 100%;
+    max-width: 100vh; /* Limita el tamaño máximo para mantener la proporción */
+    margin: 0 auto;
+}
+
+.score-container, .apples-eaten-container {
+    position: absolute;
+    top: 10px;
+    font-size: 24px;
+    color: white;
+    z-index: 10; /* Asegura que el texto esté por encima del canvas */
 }
 
 .score-container {
-    position: absolute;
-    top: 10px;
     left: 10px;
 }
 
 .apples-eaten-container {
-    position: absolute;
-    top: 10px;
     right: 10px;
 }
 
-#score, #applesEaten {
-    font-family: 'VT323', monospace;
-    font-size: 26px;
-    color: #1f1f1f;
+#gameCanvas {
+    display: block;
+    margin: 0 auto;
+    background-color: #000;
+    border: 2px solid white;
+    width: 100%; /* Ocupa el 100% del contenedor */
+    /* aspect-ratio: 1 / 1;  Asegura que el canvas sea cuadrado */
+    height: auto; /* Mantiene la proporción */
+    max-width: 100%; /* Evita que el canvas se salga de la pantalla */
+    max-height: 90vh; /* Limita la altura para que no sea demasiado grande */
 }
 
-#gameCanvas {
-    border: 1px solid white;
-    width: 600px; /* Cambia el ancho deseado */
-    height: 600px; /* Cambia el alto deseado */
+/* Estilos para pantallas pequeñas (móviles) */
+@media (max-width: 600px) {
+    .score-container, .apples-eaten-container {
+        font-size: 18px; /* Reduce el tamaño de la fuente en móviles */
+    }
+
+    #gameCanvas {
+        max-height: 80vh; /* Ajusta la altura máxima en móviles */
+    }
 }

@@ -32,299 +32,299 @@ const applesEatenElement = document.getElementById("applesEaten");
 let gameInterval;
 
 function generateObstacle() {
-    const obstaclePosition = {
-        x: Math.floor(Math.random() * canvasWidth),
-        y: Math.floor(Math.random() * canvasHeight),
-    };
-    obstacles.push(obstaclePosition);
+  const obstaclePosition = {
+    x: Math.floor(Math.random() * canvasWidth),
+    y: Math.floor(Math.random() * canvasHeight),
+  };
+  obstacles.push(obstaclePosition);
 }
-
 
 // Función para generar una posición aleatoria para la comida
 function generateFoodPosition() {
-    let newFoodPosition;
-    do {
-        newFoodPosition = {
-            x: Math.floor(Math.random() * canvasWidth),
-            y: Math.floor(Math.random() * canvasHeight),
-        };
-    } while (checkCollision(newFoodPosition));
+  let newFoodPosition;
+  do {
+    newFoodPosition = {
+      x: Math.floor(Math.random() * canvasWidth),
+      y: Math.floor(Math.random() * canvasHeight),
+    };
+  } while (checkCollision(newFoodPosition));
 
-    if (Math.random() < 0.9) {
-        newFoodPosition.type = "red"; // Manzana roja
-    } else {
-        newFoodPosition.type = "gold"; // Manzana azul
-        goldenAppleTimer = goldenAppleDuration; // Inicia el temporizador de la manzana azul
-    }
-    return newFoodPosition;
+  if (Math.random() < 0.9) {
+    newFoodPosition.type = "red"; // Manzana roja
+  } else {
+    newFoodPosition.type = "gold"; // Manzana azul
+    goldenAppleTimer = goldenAppleDuration; // Inicia el temporizador de la manzana azul
+  }
+  return newFoodPosition;
 }
-
 
 // Función para dibujar elementos en el lienzo
 function draw() {
-    // Dibuja el fondo
-    for (let y = 0; y < canvasHeight; y++) {
-        for (let x = 0; x < canvasWidth; x++) {
-            // Alterna los colores de fondo en cada cuadrado
-            if ((x + y) % 2 === 0) {
-                context.fillStyle = "lightgreen";
-            } else {
-                context.fillStyle = "#D0E6AF";
-            }
+  // Dibuja el fondo
+  for (let y = 0; y < canvasHeight; y++) {
+    for (let x = 0; x < canvasWidth; x++) {
+      // Alterna los colores de fondo en cada cuadrado
+      if ((x + y) % 2 === 0) {
+        context.fillStyle = "lightgreen";
+      } else {
+        context.fillStyle = "#D0E6AF";
+      }
 
-            context.fillRect(
-                x * boxSize,
-                y * boxSize,
-                boxSize,
-                boxSize
-            );
-        }
+      context.fillRect(x * boxSize, y * boxSize, boxSize, boxSize);
     }
+  }
 
+  // Dibuja la serpiente
+  for (let i = 0; i < snake.length; i++) {
+    const segment = snake[i];
 
-    // Dibuja la serpiente
-    for (let i = 0; i < snake.length; i++) {
-        const segment = snake[i];
+    // Dibuja el cuerpo de la serpiente con el color azul y borde de contraste
+    context.fillStyle = "blue";
+    context.fillRect(
+      segment.x * boxSize + 1,
+      segment.y * boxSize + 1,
+      boxSize - 2,
+      boxSize - 2
+    );
 
-        // Dibuja el cuerpo de la serpiente con el color azul y borde de contraste
-        context.fillStyle = "blue";
-        context.fillRect(
-            segment.x * boxSize + 1,
-            segment.y * boxSize + 1,
-            boxSize - 2,
-            boxSize - 2
-        );
+    // Dibuja el borde de la serpiente con un color de contraste
+    context.strokeStyle = "white";
+    context.lineWidth = 1;
+    context.strokeRect(
+      segment.x * boxSize,
+      segment.y * boxSize,
+      boxSize,
+      boxSize
+    );
 
-        // Dibuja el borde de la serpiente con un color de contraste
-        context.strokeStyle = "white";
-        context.lineWidth = 1;
-        context.strokeRect(
-            segment.x * boxSize,
-            segment.y * boxSize,
-            boxSize,
-            boxSize
-        );
+    // Dibuja los ojos en la cabeza de la serpiente
+    if (i === 0) {
+      const headX = segment.x * boxSize;
+      const headY = segment.y * boxSize;
+      const eyeSize = boxSize / 5;
 
-        // Dibuja los ojos en la cabeza de la serpiente
-        if (i === 0) {
-            const headX = segment.x * boxSize;
-            const headY = segment.y * boxSize;
-            const eyeSize = boxSize / 5;
+      // Dibuja el ojo izquierdo
+      context.fillStyle = "white";
+      context.fillRect(headX + eyeSize, headY + eyeSize, eyeSize, eyeSize);
 
-            // Dibuja el ojo izquierdo
-            context.fillStyle = "white";
-            context.fillRect(headX + eyeSize, headY + eyeSize, eyeSize, eyeSize);
-
-            // Dibuja el ojo derecho
-            context.fillRect(
-                headX + (boxSize - 2 * eyeSize),
-                headY + eyeSize,
-                eyeSize,
-                eyeSize
-            );
-        }
+      // Dibuja el ojo derecho
+      context.fillRect(
+        headX + (boxSize - 2 * eyeSize),
+        headY + eyeSize,
+        eyeSize,
+        eyeSize
+      );
     }
+  }
 
-    // Dibuja la comida
-    if (food.type === "red") {
-        context.fillStyle = "red"; // Color para la manzana roja
-        context.beginPath();
-        context.arc(
-            food.x * boxSize + boxSize / 2, // Centro X del círculo
-            food.y * boxSize + boxSize / 2, // Centro Y del círculo
-            boxSize / 3, // Radio del círculo
-            0, // Ángulo inicial
-            Math.PI * 2 // Ángulo final (círculo completo)
-        );
-        context.fill();
-    } else if (food.type === "gold") {
-        context.fillStyle = "orange"; // Color para la manzana azul
-        context.beginPath();
-        context.arc(
-            food.x * boxSize + boxSize / 2,
-            food.y * boxSize + boxSize / 2,
-            boxSize / 3,
-            0,
-            Math.PI * 2
-        );
-        context.fill();
+  // Dibuja la comida
+  if (food.type === "red") {
+    context.fillStyle = "red"; // Color para la manzana roja
+    context.beginPath();
+    context.arc(
+      food.x * boxSize + boxSize / 2, // Centro X del círculo
+      food.y * boxSize + boxSize / 2, // Centro Y del círculo
+      boxSize / 3, // Radio del círculo
+      0, // Ángulo inicial
+      Math.PI * 2 // Ángulo final (círculo completo)
+    );
+    context.fill();
+  } else if (food.type === "gold") {
+    context.fillStyle = "orange"; // Color para la manzana azul
+    context.beginPath();
+    context.arc(
+      food.x * boxSize + boxSize / 2,
+      food.y * boxSize + boxSize / 2,
+      boxSize / 3,
+      0,
+      Math.PI * 2
+    );
+    context.fill();
+  }
+
+  // Genera un obstáculo aleatoriamente
+  if (Math.random() < 0.02) {
+    generateObstacle();
+  }
+
+  // Mueve la serpiente
+  let head = { x: snake[0].x, y: snake[0].y };
+  if (direction === "right") {
+    head.x++;
+    if (head.x >= canvasWidth) {
+      head.x = 0;
     }
-
-    // Genera un obstáculo aleatoriamente
-    if (Math.random() < 0.02) {
-        generateObstacle();
+  } else if (direction === "left") {
+    head.x--;
+    if (head.x < 0) {
+      head.x = canvasWidth - 1;
     }
-
-    // Mueve la serpiente
-    let head = { x: snake[0].x, y: snake[0].y };
-    if (direction === "right") {
-        head.x++;
-        if (head.x >= canvasWidth) {
-            head.x = 0;
-        }
-    } else if (direction === "left") {
-        head.x--;
-        if (head.x < 0) {
-            head.x = canvasWidth - 1;
-        }
-    } else if (direction === "up") {
-        head.y--;
-        if (head.y < 0) {
-            head.y = canvasHeight - 1;
-        }
-    } else if (direction === "down") {
-        head.y++;
-        if (head.y >= canvasHeight) {
-            head.y = 0;
-        }
+  } else if (direction === "up") {
+    head.y--;
+    if (head.y < 0) {
+      head.y = canvasHeight - 1;
     }
+  } else if (direction === "down") {
+    head.y++;
+    if (head.y >= canvasHeight) {
+      head.y = 0;
+    }
+  }
 
-    // Evento para cuando el usuario toca la pantalla
-canvas.addEventListener('touchstart', function(event) {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
-}, false);
+  // Evento para cuando el usuario toca la pantalla
+  canvas.addEventListener(
+    "touchstart",
+    function (event) {
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    },
+    false
+  );
 
-// Evento para cuando el usuario mueve el dedo en la pantalla
-canvas.addEventListener('touchmove', function(event) {
-    if (touchStartX === null || touchStartY === null) {
+  // Evento para cuando el usuario mueve el dedo en la pantalla
+  canvas.addEventListener(
+    "touchmove",
+    function (event) {
+      if (touchStartX === null || touchStartY === null) {
         return;
-    }
+      }
 
-    let touchEndX = event.touches[0].clientX;
-    let touchEndY = event.touches[0].clientY;
+      let touchEndX = event.touches[0].clientX;
+      let touchEndY = event.touches[0].clientY;
 
-    let dx = touchEndX - touchStartX;
-    let dy = touchEndY - touchStartY;
+      let dx = touchEndX - touchStartX;
+      let dy = touchEndY - touchStartY;
 
-    if (Math.abs(dx) > Math.abs(dy)) {
+      if (Math.abs(dx) > Math.abs(dy)) {
         // Movimiento horizontal
         if (dx > 0) {
-            direction = "right";
+          direction = "right";
         } else {
-            direction = "left";
+          direction = "left";
         }
-    } else {
+      } else {
         // Movimiento vertical
         if (dy > 0) {
-            direction = "down";
+          direction = "down";
         } else {
-            direction = "up";
+          direction = "up";
         }
+      }
+
+      // Restablecer las coordenadas iniciales para el próximo movimiento
+      touchStartX = null;
+      touchStartY = null;
+
+      // Prevenir el desplazamiento de la página
+      event.preventDefault();
+    },
+    false
+  );
+
+  // Dibuja los obstáculos
+  for (let i = 0; i < obstacles.length; i++) {
+    const obstacle = obstacles[i];
+    context.fillStyle = "gray";
+    context.fillRect(
+      obstacle.x * boxSize + 1,
+      obstacle.y * boxSize + 1,
+      boxSize - 2,
+      boxSize - 2
+    );
+  }
+
+  // Verifica si la serpiente come la comida
+  if (head.x === food.x && head.y === food.y) {
+    if (food.type === "red") {
+      score += 1.5 + goldenApplesEaten * 6;
+      applesEaten++;
+    } else if (food.type === "blue") {
+      score = score * 1.5;
+      goldenApplesEaten++;
     }
+    food = generateFoodPosition();
 
-    // Restablecer las coordenadas iniciales para el próximo movimiento
-    touchStartX = null;
-    touchStartY = null;
-
-    // Prevenir el desplazamiento de la página
-    event.preventDefault();
-}, false);
-
-    // Dibuja los obstáculos
-    for (let i = 0; i < obstacles.length; i++) {
-        const obstacle = obstacles[i];
-        context.fillStyle = "gray";
-        context.fillRect(
-            obstacle.x * boxSize + 1,
-            obstacle.y * boxSize + 1,
-            boxSize - 2,
-            boxSize - 2
-        );
+    if ((applesEaten + goldenApplesEaten) % 3 === 0) {
+      speed -= 3;
     }
+  } else {
+    snake.pop();
+  }
 
-    // Verifica si la serpiente come la comida
-    if (head.x === food.x && head.y === food.y) {
-        if (food.type === "red") {
-            score += 1.5 + goldenApplesEaten * 6;
-            applesEaten++;
-        } else if (food.type === "blue") {
-            score = score * 1.5;
-            goldenApplesEaten++;
-        }
-        food = generateFoodPosition();
-
-        if ((applesEaten + goldenApplesEaten) % 3 === 0) {
-            speed -= 3;
-        }
-    } else {
-        snake.pop();
+  // Actualiza el temporizador de la manzana azul
+  if (food.type === "blue") {
+    goldenAppleTimer -= speed;
+    if (goldenAppleTimer <= 0) {
+      food = generateFoodPosition();
+      goldenAppleTimer = goldenAppleDuration;
     }
+  }
 
-    // Actualiza el temporizador de la manzana azul
-    if (food.type === "blue") {
-        goldenAppleTimer -= speed;
-        if (goldenAppleTimer <= 0) {
-            food = generateFoodPosition();
-            goldenAppleTimer = goldenAppleDuration;
-        }
-    }
+  snake.unshift(head);
 
-    snake.unshift(head);
-
-    // Verifica si la serpiente choca consigo misma
-    if (checkCollision(head) || checkCollisionWithObstacles(head)) {
-        clearInterval(gameInterval);
-        showGameOver();
-        return;
-    }
-
-    // Actualiza el recuento de manzanas comidas
-    totalAples = goldenApplesEaten + applesEaten;
-    applesEatenElement.textContent = `Manzanas: ${totalAples}`;
-
-    // Actualiza la velocidad del bucle principal del juego
+  // Verifica si la serpiente choca consigo misma
+  if (checkCollision(head) || checkCollisionWithObstacles(head)) {
     clearInterval(gameInterval);
-    gameInterval = setInterval(draw, speed);
+    showGameOver();
+    return;
+  }
 
-    // Muestra la puntuación fuera del mapa
-    const scoreElement = document.getElementById("score");
-    scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
+  // Actualiza el recuento de manzanas comidas
+  totalAples = goldenApplesEaten + applesEaten;
+  applesEatenElement.textContent = `Manzanas: ${totalAples}`;
+
+  // Actualiza la velocidad del bucle principal del juego
+  clearInterval(gameInterval);
+  gameInterval = setInterval(draw, speed);
+
+  // Muestra la puntuación fuera del mapa
+  const scoreElement = document.getElementById("score");
+  scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
 }
 
 // Función para verificar colisiones con el cuerpo de la serpiente
 function checkCollision(position) {
-    for (let i = 1; i < snake.length; i++) {
-        if (position.x === snake[i].x && position.y === snake[i].y) {
-            return true;
-        }
+  for (let i = 1; i < snake.length; i++) {
+    if (position.x === snake[i].x && position.y === snake[i].y) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
 function checkCollisionWithObstacles(position) {
-    for (let i = 0; i < obstacles.length; i++) {
-        const obstacle = obstacles[i];
-        if (position.x === obstacle.x && position.y === obstacle.y) {
-            return true;
-        }
+  for (let i = 0; i < obstacles.length; i++) {
+    const obstacle = obstacles[i];
+    if (position.x === obstacle.x && position.y === obstacle.y) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
 // Manejador de eventos para cambiar la dirección de la serpiente
 document.addEventListener("keydown", (event) => {
-    if (
-        (event.key === "ArrowLeft" || event.key === "a") &&
-        direction !== "right"
-    ) {
-        direction = "left";
-    } else if (
-        (event.key === "ArrowUp" || event.key === "w") &&
-        direction !== "down"
-    ) {
-        direction = "up";
-    } else if (
-        (event.key === "ArrowRight" || event.key === "d") &&
-        direction !== "left"
-    ) {
-        direction = "right";
-    } else if (
-        (event.key === "ArrowDown" || event.key === "s") &&
-        direction !== "up"
-    ) {
-        direction = "down";
-    }
+  if (
+    (event.key === "ArrowLeft" || event.key === "a") &&
+    direction !== "right"
+  ) {
+    direction = "left";
+  } else if (
+    (event.key === "ArrowUp" || event.key === "w") &&
+    direction !== "down"
+  ) {
+    direction = "up";
+  } else if (
+    (event.key === "ArrowRight" || event.key === "d") &&
+    direction !== "left"
+  ) {
+    direction = "right";
+  } else if (
+    (event.key === "ArrowDown" || event.key === "s") &&
+    direction !== "up"
+  ) {
+    direction = "down";
+  }
 });
 
 // Bucle principal del juego
@@ -332,55 +332,76 @@ gameInterval = setInterval(draw, speed);
 
 // Función para reiniciar el juego
 function resetGame() {
-    snake = [{ x: 10, y: 10 }];
-    food = generateFoodPosition();
-    direction = "right";
-    speed = 200;
-    score = 0;
-    applesEaten = 0; // Reinicia el contador de manzanas rojas
-    goldenApplesEaten = 0; // Reinicia el contador de manzanas azules
-    obstacles = [];
-    applesEatenElement.textContent = `Manzanas rojas: ${applesEaten} | Manzanas azules: ${goldenApplesEaten}`;
-    const scoreElement = document.getElementById("score");
-    scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
+  snake = [{ x: 10, y: 10 }];
+  food = generateFoodPosition();
+  direction = "right";
+  speed = 200;
+  score = 0;
+  applesEaten = 0; // Reinicia el contador de manzanas rojas
+  goldenApplesEaten = 0; // Reinicia el contador de manzanas azules
+  obstacles = [];
+  applesEatenElement.textContent = `Manzanas rojas: ${applesEaten} | Manzanas azules: ${goldenApplesEaten}`;
+  const scoreElement = document.getElementById("score");
+  scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
 
-    // Oculta el botón de reinicio si existe
-    const restartButton = document.getElementById("restartButton");
-    if (restartButton) {
-        restartButton.remove();
-    }
+  // Oculta el botón de reinicio si existe
+  const restartButton = document.getElementById("restartButton");
+  if (restartButton) {
+    restartButton.remove();
+  }
 }
 
-// Función para mostrar el mensaje de Game Over
 function showGameOver() {
-    const scoreMessage = `Puntuación: ${Math.floor(score)}`;
-    const applesEatenMessage = `Manzanas comidas: ${applesEaten}`;
-    const gameOverMessage = `Game Over\n${scoreMessage}\n${applesEatenMessage}`;
+  const scoreMessage = `Puntuación: ${Math.floor(score)}`;
+  const applesEatenMessage = `Manzanas comidas: ${applesEaten}`;
+  const gameOverMessage = `Game Over\n${scoreMessage}\n${applesEatenMessage}`;
 
-    // Crea el botón de reinicio
-    const restartButton = document.createElement("button");
-    restartButton.textContent = "Reiniciar";
-    restartButton.id = "restartButton";
-    restartButton.style.position = "absolute";
-    restartButton.style.left = "50%";
-    restartButton.style.top = "50%";
-    restartButton.style.transform = "translate(-50%, -50%)";
-    restartButton.style.padding = "10px 20px";
-    restartButton.style.fontSize = "16px";
-    restartButton.style.backgroundColor = "red";
-    restartButton.style.border = "none";
-    restartButton.style.color = "white";
-    restartButton.style.fontFamily = "'VT323', monospace";
-    restartButton.style.cursor = "pointer";
+  // Create a container for the Game Over message and button
+  const gameOverBox = document.createElement("div");
+  gameOverBox.id = "gameOverBox";
+  gameOverBox.style.position = "absolute";
+  gameOverBox.style.left = "50%";
+  gameOverBox.style.top = "50%";
+  gameOverBox.style.transform = "translate(-50%, -50%)";
+  gameOverBox.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+  gameOverBox.style.color = "white";
+  gameOverBox.style.padding = "20px";
+  gameOverBox.style.borderRadius = "10px";
+  gameOverBox.style.textAlign = "center";
+  gameOverBox.style.fontFamily = "'VT323', monospace";
+  gameOverBox.style.zIndex = "1000";
 
-    // Agrega el evento de clic al botón de reinicio
-    restartButton.addEventListener("click", () => {
-        clearInterval(gameInterval);
-        resetGame();
-        gameInterval = setInterval(draw, speed);
-    });
+  // Add the Game Over message
+  const message = document.createElement("p");
+  message.textContent = gameOverMessage;
+  message.style.fontSize = "24px";
+  message.style.margin = "0 0 20px 0";
+  gameOverBox.appendChild(message);
 
-    // Muestra el mensaje de Game Over y el botón de reinicio en un cuadro de diálogo
-    alert(gameOverMessage);
-    document.body.appendChild(restartButton);
+  // Create the restart button
+  const restartButton = document.createElement("button");
+  restartButton.textContent = "Reiniciar";
+  restartButton.style.padding = "10px 20px";
+  restartButton.style.fontSize = "20px";
+  restartButton.style.backgroundColor = "red";
+  restartButton.style.border = "none";
+  restartButton.style.color = "white";
+  restartButton.style.cursor = "pointer";
+  restartButton.style.borderRadius = "5px";
+  restartButton.style.fontFamily = "'VT323', monospace";
+
+  // Add the click event to the restart button
+  restartButton.addEventListener("click", () => {
+    clearInterval(gameInterval);
+    resetGame();
+    gameInterval = setInterval(draw, speed);
+    document.body.removeChild(gameOverBox); // Remove the Game Over box
+  });
+
+  // Add the button to the Game Over box
+  gameOverBox.appendChild(restartButton);
+
+  // Add the Game Over box to the body
+  document.body.appendChild(gameOverBox);
 }
+
