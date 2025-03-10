@@ -11,36 +11,12 @@ let speed = 200; // Snake movement speed (ms)
 let score = 0; // Player score
 let redApples = 0; // Total red apples
 let goldenApples = 0; // Total golden apples
-//let totalAples = 0; // Total apples eaten
-// let goldenAppleTimer = 0; // Timer
-// const goldenAppleDuration = 5000; // time of appearence in milliseconds
 let obstacles = []; // Array that stores the obstacles
 let touchStartX = null; // Touch shift x
 let touchStartY = null; // Touch shift y
 // HTML element to display the count of apples eaten
 const applesEatenElement = document.getElementById("applesEaten");
 let gameInterval; // Reference to the game interval
-
-/*------------------------------------
-Function to generate a random obstacle
--------------------------------------*/
-// function generateObstacle() {
-//   const obstaclePosition = {
-//     x: Math.floor(Math.random() * canvasWidth),
-//     y: Math.floor(Math.random() * canvasHeight),
-//   };
-//   obstacles.push(obstaclePosition);
-// }
-
-// function checkCollisionWithObstacles(position) {
-//   for (let i = 0; i < obstacles.length; i++) {
-//     const obstacle = obstacles[i];
-//     if (position.x === obstacle.x && position.y === obstacle.y) {
-//       return true;
-//     }
-//   }
-//   return false;
-// }
 
 /*------------------------------------
 Function to generate a random position
@@ -138,11 +114,6 @@ function draw() {
     context.fill();
   }
 
-  // Genera a random obstacule
-  // if (Math.random() < 0.02) {
-  //   generateObstacle();
-  // }
-
   // Move the snake with arrows
   let head = { x: snake[0].x, y: snake[0].y };
   if (direction === "right") {
@@ -167,18 +138,6 @@ function draw() {
     }
   }
 
-  // // Dibuja los obstáculos
-  // for (let i = 0; i < obstacles.length; i++) {
-  //   const obstacle = obstacles[i];
-  //   context.fillStyle = "gray";
-  //   context.fillRect(
-  //     obstacle.x * boxSize + 1,
-  //     obstacle.y * boxSize + 1,
-  //     boxSize - 2,
-  //     boxSize - 2
-  //   );
-  // }
-
   /*---------------------------------/ 
   / Check if the snake eats the food /
   /---------------------------------*/
@@ -192,15 +151,6 @@ function draw() {
   } else {
     snake.pop();
   }
-
-  // Actualiza el temporizador de la manzana azul
-  // if (food.type === "golden") {
-  //   goldenAppleTimer -= speed;
-  //   if (goldenAppleTimer <= 0) {
-  //     food = generateFoodPosition();
-  //     goldenAppleTimer = goldenAppleDuration;
-  //   }
-  // }
 
   snake.unshift(head);
 
@@ -319,12 +269,6 @@ function resetGame() {
   applesEatenElement.textContent = `Manzanas rojas: ${redApples}`;
   const scoreElement = document.getElementById("score");
   scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
-
-  // // Oculta el botón de reinicio si existe
-  // const restartButton = document.getElementById("restartButton");
-  // if (restartButton) {
-  //   restartButton.remove();
-  // }
 }
 
 function showGameOver() {
