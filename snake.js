@@ -1,45 +1,51 @@
-// Configuración del juego
-const canvas = document.getElementById("gameCanvas");
-const context = canvas.getContext("2d");
-const boxSize = 20;
-const canvasWidth = canvas.width / boxSize;
-const canvasHeight = canvas.height / boxSize;
-let snake = [{ x: 10, y: 10 }];
-let food = generateFoodPosition();
-let direction = "right";
-let speed = 200; // Velocidad inicial (en milisegundos)
-let score = 0; // Puntuación
-
-// Variables para contar las manzanas comidas
-let applesEaten = 0;
-let goldenApplesEaten = 0;
-let totalAples = 0;
-
-// Tiempo de la manzana azul
-let goldenAppleTimer = 0;
-const goldenAppleDuration = 5000; // 5 segundos en milisegundos
-
-// Arreglo que almacena los obstaculos
-let obstacles = [];
-
-let touchStartX = null;
-let touchStartY = null;
-
-// Elemento HTML para mostrar el recuento de manzanas comidas
+/* Variables */
+const canvas = document.getElementById("gameCanvas"); // Get canvas element
+const context = canvas.getContext("2d"); // Get 2D drawing context
+const boxSize = 20; // Size of each grid cell
+const canvasWidth = canvas.width / boxSize; // Grid width in cells
+const canvasHeight = canvas.height / boxSize; // Grid height in cells
+let snake = [{ x: 10, y: 10 }]; // Snake starting position
+let food = generateFoodPosition(); // Random food position
+let direction = "right"; // Initial movement direction
+let speed = 200; // Snake movement speed (ms)
+let score = 0; // Player score
+let redApples = 0; // Total red apples
+let goldenApples = 0; // Total golden apples
+//let totalAples = 0; // Total apples eaten
+// let goldenAppleTimer = 0; // Timer
+// const goldenAppleDuration = 5000; // time of appearence in milliseconds
+let obstacles = []; // Array that stores the obstacles
+let touchStartX = null; // Touch shift x
+let touchStartY = null; // Touch shift y
+// HTML element to display the count of apples eaten
 const applesEatenElement = document.getElementById("applesEaten");
+let gameInterval; // Reference to the game interval
 
-// Referencia al intervalo del juego
-let gameInterval;
+/*------------------------------------
+Function to generate a random obstacle
+-------------------------------------*/
+// function generateObstacle() {
+//   const obstaclePosition = {
+//     x: Math.floor(Math.random() * canvasWidth),
+//     y: Math.floor(Math.random() * canvasHeight),
+//   };
+//   obstacles.push(obstaclePosition);
+// }
 
-function generateObstacle() {
-  const obstaclePosition = {
-    x: Math.floor(Math.random() * canvasWidth),
-    y: Math.floor(Math.random() * canvasHeight),
-  };
-  obstacles.push(obstaclePosition);
-}
+// function checkCollisionWithObstacles(position) {
+//   for (let i = 0; i < obstacles.length; i++) {
+//     const obstacle = obstacles[i];
+//     if (position.x === obstacle.x && position.y === obstacle.y) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }
 
-// Función para generar una posición aleatoria para la comida
+/*------------------------------------
+Function to generate a random position
+for the food
+-------------------------------------*/
 function generateFoodPosition() {
   let newFoodPosition;
   do {
@@ -48,46 +54,50 @@ function generateFoodPosition() {
       y: Math.floor(Math.random() * canvasHeight),
     };
   } while (checkCollision(newFoodPosition));
-
-  if (Math.random() < 0.9) {
-    newFoodPosition.type = "red"; // Manzana roja
-  } else {
-    newFoodPosition.type = "gold"; // Manzana azul
-    goldenAppleTimer = goldenAppleDuration; // Inicia el temporizador de la manzana azul
-  }
+  newFoodPosition.type = "red";
   return newFoodPosition;
 }
 
-// Función para dibujar elementos en el lienzo
+/*------------------------------------------------------|
+|Function to check for collisions with the snake's body |
+|------------------------------------------------------*/
+function checkCollision(position) {
+  for (let i = 1; i < snake.length; i++) {
+    if (position.x === snake[i].x && position.y === snake[i].y) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/*--------------------------------------
+Function to drive elements on the canvas
+---------------------------------------*/
 function draw() {
-  // Dibuja el fondo
+  // Draw the background
   for (let y = 0; y < canvasHeight; y++) {
     for (let x = 0; x < canvasWidth; x++) {
-      // Alterna los colores de fondo en cada cuadrado
+      // Alternate background color in each square
       if ((x + y) % 2 === 0) {
         context.fillStyle = "lightgreen";
       } else {
         context.fillStyle = "#D0E6AF";
       }
-
       context.fillRect(x * boxSize, y * boxSize, boxSize, boxSize);
     }
   }
 
-  // Dibuja la serpiente
+  // Draw the snake
   for (let i = 0; i < snake.length; i++) {
     const segment = snake[i];
-
-    // Dibuja el cuerpo de la serpiente con el color azul y borde de contraste
     context.fillStyle = "blue";
     context.fillRect(
-      segment.x * boxSize + 1,
-      segment.y * boxSize + 1,
+      segment.x * boxSize + 0.5,
+      segment.y * boxSize + 0.5,
       boxSize - 2,
       boxSize - 2
     );
-
-    // Dibuja el borde de la serpiente con un color de contraste
+    // Draw the edge of snake
     context.strokeStyle = "white";
     context.lineWidth = 1;
     context.strokeRect(
@@ -96,18 +106,15 @@ function draw() {
       boxSize,
       boxSize
     );
-
-    // Dibuja los ojos en la cabeza de la serpiente
+    // Draw the eyes on the snake's head
     if (i === 0) {
       const headX = segment.x * boxSize;
       const headY = segment.y * boxSize;
       const eyeSize = boxSize / 5;
-
-      // Dibuja el ojo izquierdo
+      // Draw the left eye
       context.fillStyle = "white";
       context.fillRect(headX + eyeSize, headY + eyeSize, eyeSize, eyeSize);
-
-      // Dibuja el ojo derecho
+      // Draw the right eye
       context.fillRect(
         headX + (boxSize - 2 * eyeSize),
         headY + eyeSize,
@@ -117,37 +124,26 @@ function draw() {
     }
   }
 
-  // Dibuja la comida
+  // Drow the food
   if (food.type === "red") {
-    context.fillStyle = "red"; // Color para la manzana roja
+    context.fillStyle = "red";
     context.beginPath();
     context.arc(
-      food.x * boxSize + boxSize / 2, // Centro X del círculo
-      food.y * boxSize + boxSize / 2, // Centro Y del círculo
-      boxSize / 3, // Radio del círculo
-      0, // Ángulo inicial
-      Math.PI * 2 // Ángulo final (círculo completo)
-    );
-    context.fill();
-  } else if (food.type === "gold") {
-    context.fillStyle = "orange"; // Color para la manzana azul
-    context.beginPath();
-    context.arc(
-      food.x * boxSize + boxSize / 2,
-      food.y * boxSize + boxSize / 2,
-      boxSize / 3,
-      0,
-      Math.PI * 2
+      food.x * boxSize + boxSize / 2, // Center X of the circle
+      food.y * boxSize + boxSize / 2, // Center Y of the circle
+      boxSize / 3, // Radius of the circle
+      0, // Initial angle
+      Math.PI * 2 // Final angle (full circle)
     );
     context.fill();
   }
 
-  // Genera un obstáculo aleatoriamente
-  if (Math.random() < 0.02) {
-    generateObstacle();
-  }
+  // Genera a random obstacule
+  // if (Math.random() < 0.02) {
+  //   generateObstacle();
+  // }
 
-  // Mueve la serpiente
+  // Move the snake with arrows
   let head = { x: snake[0].x, y: snake[0].y };
   if (direction === "right") {
     head.x++;
@@ -171,138 +167,66 @@ function draw() {
     }
   }
 
-  // Evento para cuando el usuario toca la pantalla
-  canvas.addEventListener(
-    "touchstart",
-    function (event) {
-      touchStartX = event.touches[0].clientX;
-      touchStartY = event.touches[0].clientY;
-    },
-    false
-  );
+  // // Dibuja los obstáculos
+  // for (let i = 0; i < obstacles.length; i++) {
+  //   const obstacle = obstacles[i];
+  //   context.fillStyle = "gray";
+  //   context.fillRect(
+  //     obstacle.x * boxSize + 1,
+  //     obstacle.y * boxSize + 1,
+  //     boxSize - 2,
+  //     boxSize - 2
+  //   );
+  // }
 
-  // Evento para cuando el usuario mueve el dedo en la pantalla
-  canvas.addEventListener(
-    "touchmove",
-    function (event) {
-      if (touchStartX === null || touchStartY === null) {
-        return;
-      }
-
-      let touchEndX = event.touches[0].clientX;
-      let touchEndY = event.touches[0].clientY;
-
-      let dx = touchEndX - touchStartX;
-      let dy = touchEndY - touchStartY;
-
-      if (Math.abs(dx) > Math.abs(dy)) {
-        // Movimiento horizontal
-        if (dx > 0) {
-          direction = "right";
-        } else {
-          direction = "left";
-        }
-      } else {
-        // Movimiento vertical
-        if (dy > 0) {
-          direction = "down";
-        } else {
-          direction = "up";
-        }
-      }
-
-      // Restablecer las coordenadas iniciales para el próximo movimiento
-      touchStartX = null;
-      touchStartY = null;
-
-      // Prevenir el desplazamiento de la página
-      event.preventDefault();
-    },
-    false
-  );
-
-  // Dibuja los obstáculos
-  for (let i = 0; i < obstacles.length; i++) {
-    const obstacle = obstacles[i];
-    context.fillStyle = "gray";
-    context.fillRect(
-      obstacle.x * boxSize + 1,
-      obstacle.y * boxSize + 1,
-      boxSize - 2,
-      boxSize - 2
-    );
-  }
-
-  // Verifica si la serpiente come la comida
+  /*---------------------------------/ 
+  / Check if the snake eats the food /
+  /---------------------------------*/
   if (head.x === food.x && head.y === food.y) {
-    if (food.type === "red") {
-      score += 1.5 + goldenApplesEaten * 6;
-      applesEaten++;
-    } else if (food.type === "blue") {
-      score = score * 1.5;
-      goldenApplesEaten++;
+    score += 1.5;
+    redApples++;
+    if (speed > 75) {
+      speed -= 1;
     }
     food = generateFoodPosition();
-
-    if ((applesEaten + goldenApplesEaten) % 3 === 0) {
-      speed -= 3;
-    }
   } else {
     snake.pop();
   }
 
   // Actualiza el temporizador de la manzana azul
-  if (food.type === "blue") {
-    goldenAppleTimer -= speed;
-    if (goldenAppleTimer <= 0) {
-      food = generateFoodPosition();
-      goldenAppleTimer = goldenAppleDuration;
-    }
-  }
+  // if (food.type === "golden") {
+  //   goldenAppleTimer -= speed;
+  //   if (goldenAppleTimer <= 0) {
+  //     food = generateFoodPosition();
+  //     goldenAppleTimer = goldenAppleDuration;
+  //   }
+  // }
 
   snake.unshift(head);
 
-  // Verifica si la serpiente choca consigo misma
-  if (checkCollision(head) || checkCollisionWithObstacles(head)) {
+  // Check if the snake collides with itself
+  if (checkCollision(head)) {
     clearInterval(gameInterval);
     showGameOver();
     return;
   }
 
-  // Actualiza el recuento de manzanas comidas
-  totalAples = goldenApplesEaten + applesEaten;
+  // Updates the count of apples eaten
+  totalAples = redApples;
   applesEatenElement.textContent = `Manzanas: ${totalAples}`;
 
-  // Actualiza la velocidad del bucle principal del juego
+  // Updates the speed of the main game loop
   clearInterval(gameInterval);
   gameInterval = setInterval(draw, speed);
 
-  // Muestra la puntuación fuera del mapa
+  // Shows the score
   const scoreElement = document.getElementById("score");
   scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
 }
 
-// Función para verificar colisiones con el cuerpo de la serpiente
-function checkCollision(position) {
-  for (let i = 1; i < snake.length; i++) {
-    if (position.x === snake[i].x && position.y === snake[i].y) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function checkCollisionWithObstacles(position) {
-  for (let i = 0; i < obstacles.length; i++) {
-    const obstacle = obstacles[i];
-    if (position.x === obstacle.x && position.y === obstacle.y) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Manejador de eventos para cambiar la dirección de la serpiente
+/*---------------------------------/
+/ Move the snake with the keyboard /
+/---------------------------------*/
 document.addEventListener("keydown", (event) => {
   if (
     (event.key === "ArrowLeft" || event.key === "a") &&
@@ -327,33 +251,85 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+  /*----------------------------------- 
+  Move the snake with the touch screen 
+  -------------------------------------*/
+  canvas.addEventListener(
+    "touchstart",
+    function (event) {
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    },
+    false
+  );
+  // Event for when the user moves his finger on the screen
+  canvas.addEventListener(
+    "touchmove",
+    function (event) {
+      if (touchStartX === null || touchStartY === null) {
+        return;
+      }
+
+      let touchEndX = event.touches[0].clientX;
+      let touchEndY = event.touches[0].clientY;
+
+      let dx = touchEndX - touchStartX;
+      let dy = touchEndY - touchStartY;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal movement
+        if (dx > 0) {
+          direction = "right";
+        } else {
+          direction = "left";
+        }
+      } else {
+        // Vertical movement
+        if (dy > 0) {
+          direction = "down";
+        } else {
+          direction = "up";
+        }
+      }
+
+      // Reset initial coordinates for next move
+      touchStartX = null;
+      touchStartY = null;
+
+      // Prevent page scrolling
+      event.preventDefault();
+    },
+    false
+  );
+
 // Bucle principal del juego
 gameInterval = setInterval(draw, speed);
 
-// Función para reiniciar el juego
+// Function to restart the game
 function resetGame() {
   snake = [{ x: 10, y: 10 }];
   food = generateFoodPosition();
   direction = "right";
   speed = 200;
   score = 0;
-  applesEaten = 0; // Reinicia el contador de manzanas rojas
-  goldenApplesEaten = 0; // Reinicia el contador de manzanas azules
+  redApples = 0
+  //goldenApples = 0;
   obstacles = [];
-  applesEatenElement.textContent = `Manzanas rojas: ${applesEaten} | Manzanas azules: ${goldenApplesEaten}`;
+  // applesEatenElement.textContent = `Manzanas rojas: ${redApples} | Manzanas azules: ${goldenApples}`;
+  applesEatenElement.textContent = `Manzanas rojas: ${redApples}`;
   const scoreElement = document.getElementById("score");
   scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
 
-  // Oculta el botón de reinicio si existe
-  const restartButton = document.getElementById("restartButton");
-  if (restartButton) {
-    restartButton.remove();
-  }
+  // // Oculta el botón de reinicio si existe
+  // const restartButton = document.getElementById("restartButton");
+  // if (restartButton) {
+  //   restartButton.remove();
+  // }
 }
 
 function showGameOver() {
   const scoreMessage = `Puntuación: ${Math.floor(score)}`;
-  const applesEatenMessage = `Manzanas comidas: ${applesEaten}`;
+  const applesEatenMessage = `Manzanas comidas: ${redApples}`;
   const gameOverMessage = `Game Over\n${scoreMessage}\n${applesEatenMessage}`;
 
   // Create a container for the Game Over message and button
@@ -404,4 +380,3 @@ function showGameOver() {
   // Add the Game Over box to the body
   document.body.appendChild(gameOverBox);
 }
-
