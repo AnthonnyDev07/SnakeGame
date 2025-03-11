@@ -177,80 +177,180 @@ function draw() {
 /*---------------------------------/
 / Move the snake with the keyboard /
 /---------------------------------*/
-document.addEventListener("keydown", (event) => {
+// document.addEventListener("keydown", (event) => {
+//   if (
+//     (event.key === "ArrowLeft" || event.key === "a") &&
+//     direction !== "right"
+//   ) {
+//     direction = "left";
+//   } else if (
+//     (event.key === "ArrowUp" || event.key === "w") &&
+//     direction !== "down"
+//   ) {
+//     direction = "up";
+//   } else if (
+//     (event.key === "ArrowRight" || event.key === "d") &&
+//     direction !== "left"
+//   ) {
+//     direction = "right";
+//   } else if (
+//     (event.key === "ArrowDown" || event.key === "s") &&
+//     direction !== "up"
+//   ) {
+//     direction = "down";
+//   }
+// });
+
+//   /*----------------------------------- 
+//   Move the snake with the touch screen 
+//   -------------------------------------*/
+//   canvas.addEventListener(
+//     "touchstart",
+//     function (event) {
+//       touchStartX = event.touches[0].clientX;
+//       touchStartY = event.touches[0].clientY;
+//     },
+//     false
+//   );
+//   // Event for when the user moves his finger on the screen
+//   canvas.addEventListener(
+//     "touchmove",
+//     function (event) {
+//       if (touchStartX === null || touchStartY === null) {
+//         return;
+//       }
+
+//       let touchEndX = event.touches[0].clientX;
+//       let touchEndY = event.touches[0].clientY;
+
+//       let dx = touchEndX - touchStartX;
+//       let dy = touchEndY - touchStartY;
+
+//       if (Math.abs(dx) > Math.abs(dy)) {
+//         // Horizontal movement
+//         if (dx > 0) {
+//           direction = "right";
+//         } else {
+//           direction = "left";
+//         }
+//       } else {
+//         // Vertical movement
+//         if (dy > 0) {
+//           direction = "down";
+//         } else {
+//           direction = "up";
+//         }
+//       }
+
+//       // Reset initial coordinates for next move
+//       touchStartX = null;
+//       touchStartY = null;
+
+//       // Prevent page scrolling
+//       event.preventDefault();
+//     },
+//     false
+//   );
+
+// Función para verificar si la dirección es válida
+function isValidDirection(newDirection) {
+  // Si la serpiente tiene un solo segmento (solo la cabeza), cualquier dirección es válida
+  if (snake.length === 1) {
+    return true;
+  }
+
+  // Verificar si la nueva dirección es opuesta a la dirección actual
   if (
-    (event.key === "ArrowLeft" || event.key === "a") &&
-    direction !== "right"
+    (direction === "right" && newDirection === "left") ||
+    (direction === "left" && newDirection === "right") ||
+    (direction === "up" && newDirection === "down") ||
+    (direction === "down" && newDirection === "up")
   ) {
-    direction = "left";
-  } else if (
-    (event.key === "ArrowUp" || event.key === "w") &&
-    direction !== "down"
-  ) {
-    direction = "up";
-  } else if (
-    (event.key === "ArrowRight" || event.key === "d") &&
-    direction !== "left"
-  ) {
-    direction = "right";
-  } else if (
-    (event.key === "ArrowDown" || event.key === "s") &&
-    direction !== "up"
-  ) {
-    direction = "down";
+    return false; // Dirección no válida
+  }
+
+  return true; // Dirección válida
+}
+
+/*---------------------------------/
+/ Move the snake with the keyboard /
+/---------------------------------*/
+document.addEventListener("keydown", (event) => {
+  let newDirection = direction;
+
+  if (event.key === "ArrowLeft" || event.key === "a") {
+    newDirection = "left";
+  } else if (event.key === "ArrowUp" || event.key === "w") {
+    newDirection = "up";
+  } else if (event.key === "ArrowRight" || event.key === "d") {
+    newDirection = "right";
+  } else if (event.key === "ArrowDown" || event.key === "s") {
+    newDirection = "down";
+  }
+
+  // Cambiar la dirección solo si es válida
+  if (isValidDirection(newDirection)) {
+    direction = newDirection;
   }
 });
 
-  /*----------------------------------- 
+/*----------------------------------- 
   Move the snake with the touch screen 
   -------------------------------------*/
-  canvas.addEventListener(
-    "touchstart",
-    function (event) {
-      touchStartX = event.touches[0].clientX;
-      touchStartY = event.touches[0].clientY;
-    },
-    false
-  );
-  // Event for when the user moves his finger on the screen
-  canvas.addEventListener(
-    "touchmove",
-    function (event) {
-      if (touchStartX === null || touchStartY === null) {
-        return;
-      }
+canvas.addEventListener(
+  "touchstart",
+  function (event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+  },
+  false
+);
 
-      let touchEndX = event.touches[0].clientX;
-      let touchEndY = event.touches[0].clientY;
+canvas.addEventListener(
+  "touchmove",
+  function (event) {
+    if (touchStartX === null || touchStartY === null) {
+      return;
+    }
 
-      let dx = touchEndX - touchStartX;
-      let dy = touchEndY - touchStartY;
+    let touchEndX = event.touches[0].clientX;
+    let touchEndY = event.touches[0].clientY;
 
-      if (Math.abs(dx) > Math.abs(dy)) {
-        // Horizontal movement
-        if (dx > 0) {
-          direction = "right";
-        } else {
-          direction = "left";
-        }
+    let dx = touchEndX - touchStartX;
+    let dy = touchEndY - touchStartY;
+
+    let newDirection = direction;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      // Horizontal movement
+      if (dx > 0) {
+        newDirection = "right";
       } else {
-        // Vertical movement
-        if (dy > 0) {
-          direction = "down";
-        } else {
-          direction = "up";
-        }
+        newDirection = "left";
       }
+    } else {
+      // Vertical movement
+      if (dy > 0) {
+        newDirection = "down";
+      } else {
+        newDirection = "up";
+      }
+    }
 
-      // Reset initial coordinates for next move
-      touchStartX = null;
-      touchStartY = null;
+    // Cambiar la dirección solo si es válida
+    if (isValidDirection(newDirection)) {
+      direction = newDirection;
+    }
 
-      // Prevent page scrolling
-      event.preventDefault();
-    },
-    false
-  );
+    // Reset initial coordinates for next move
+    touchStartX = null;
+    touchStartY = null;
+
+    // Prevent page scrolling
+    event.preventDefault();
+  },
+  false
+);
 
 // Bucle principal del juego
 gameInterval = setInterval(draw, speed);
