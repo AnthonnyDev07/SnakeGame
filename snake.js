@@ -285,9 +285,7 @@ function resetGame() {
   speed = 200;
   score = 0;
   redApples = 0
-  //goldenApples = 0;
   obstacles = [];
-  // applesEatenElement.textContent = `Manzanas rojas: ${redApples} | Manzanas azules: ${goldenApples}`;
   applesEatenElement.textContent = `Manzanas rojas: ${redApples}`;
   const scoreElement = document.getElementById("score");
   scoreElement.textContent = `Puntuación: ${Math.floor(score)}`;
@@ -297,8 +295,8 @@ function showGameOver() {
   const scoreMessage = `Puntuación: ${Math.floor(score)}`;
   const applesEatenMessage = `Manzanas comidas: ${redApples}`;
   const gameOverMessage = `Game Over\n${scoreMessage}\n${applesEatenMessage}`;
-
-  // Create a container for the Game Over message and button
+  
+  // Crear un contenedor para el mensaje de Game Over y el botón
   const gameOverBox = document.createElement("div");
   gameOverBox.id = "gameOverBox";
   gameOverBox.style.position = "absolute";
@@ -312,10 +310,10 @@ function showGameOver() {
   gameOverBox.style.textAlign = "center";
   gameOverBox.style.fontFamily = "'VT323', monospace";
   gameOverBox.style.zIndex = "1000";
-
-  // Add the Game Over message
+  
+  // Agregar el mensaje de Game Over
   const message = document.createElement("p");
-  message.textContent = gameOverMessage;
+  message.innerHTML = gameOverMessage.replace(/\n/g, "<br>"); // Reemplazar \n con <br>
   message.style.fontSize = "24px";
   message.style.margin = "0 0 20px 0";
   gameOverBox.appendChild(message);

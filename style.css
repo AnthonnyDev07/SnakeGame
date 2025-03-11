@@ -8,37 +8,41 @@
 
 body {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #1f1f1f;
     font-family: 'VT323', monospace;
     color: white;
-    overflow: hidden; /* Evita el desplazamiento no deseado */
+    overflow: hidden;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 20px;
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.score-container, .apples-eaten-container {
+    font-size: 24px;
+    color: white;
 }
 
 .container {
     position: relative;
     text-align: center;
     width: 100%;
-    max-width: 100vh; /* Limita el tamaño máximo para mantener la proporción */
+    max-width: 100vh;
     margin: 0 auto;
-}
-
-.score-container, .apples-eaten-container {
-    position: absolute;
-    top: 10px;
-    font-size: 24px;
-    color: white;
-    z-index: 10; /* Asegura que el texto esté por encima del canvas */
-}
-
-.score-container {
-    left: 10px;
-}
-
-.apples-eaten-container {
-    right: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
 }
 
 #gameCanvas {
@@ -46,8 +50,7 @@ body {
     margin: 0 auto;
     background-color: #000;
     border: 2px solid white;
-    width: 100%; /* Ocupa el 100% del contenedor */
-    /* aspect-ratio: 1 / 1;  Asegura que el canvas sea cuadrado */
+    width: 100%; 
     height: auto; /* Mantiene la proporción */
     max-width: 100%; /* Evita que el canvas se salga de la pantalla */
     max-height: 90vh; /* Limita la altura para que no sea demasiado grande */
@@ -61,5 +64,12 @@ body {
 
     #gameCanvas {
         max-height: 80vh; /* Ajusta la altura máxima en móviles */
+    }
+    .header {
+        padding: 5px 10px; /* Reduce el padding en móviles */
+    }
+
+    .container {
+        margin-top: 60px; /* Ajusta el margen superior en móviles */
     }
 }
