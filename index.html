@@ -1,29 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
-    <title>Snake Game</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;500&family=VT323&display=swap"
-        rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Pro Game</title>
+    <link rel="stylesheet" href="./styles/index.css">
+    <!-- Fuente retro -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="header">
-        <div class="score-container">
-            <p id="score">Puntuación: 0</p>
-        </div>
-        <div class="apples-eaten-container">
-            <p id="applesEaten">Manzanas: 0</p>
+    
+    <!-- Título fuera del contenedor de la tabla -->
+    <h2 class="title size-tittle">Snake Pro Game</h2>
+
+    <!-- Contenedor principal -->
+    <div class="table-container">
+        <!-- Contenedor para la tabla de records -->
+        <div class="records-container">
+            <h3 class="size-tittle ">Mejores Puntuaciones</h3>
+            <table id="scores-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Puntuación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se insertarán las filas dinámicamente -->
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="container">
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <!-- Contenedor de botones -->
+    <div class="button-container">
+        <a class="retro-button" href="./snake.html">Jugar</a>
     </div>
-    <script src="snake.js"></script>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+    <script src="./supabase.js"></script>
+    <script src="./js/betterScores.js"></script>
 </body>
 
 </html>

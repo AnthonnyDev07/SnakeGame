@@ -1,6 +1,6 @@
 # SNAKE
 
-![Game Preview](public/Snake.webp)
+![Game Preview](assets/Snake.webp)
 
 Welcome to **My SNAKE Game**! This is a project still in development where I mix fun, creativity, and challenges.
 
